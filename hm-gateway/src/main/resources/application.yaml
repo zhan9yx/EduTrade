@@ -1,0 +1,47 @@
+server:
+  port: 8080
+#spring:
+#  application:
+#    name: gateway
+#  cloud:
+#    nacos:
+#      server-addr: 192.168.88.130
+#    gateway:
+#      routes:
+#        - id: item-service #服务名，在对应服务的yaml文件中定义，不一定是 module name
+#          uri: lb://item-service # lb 负载均衡
+#          predicates:
+#            - Path=/items/**,/search/** # 路径做匹配, -在yaml中表示是列表元素，路径去controller中看，所有controller需要涵括
+#            # - Path=/search/**
+#          #filters:
+#          #  - AddRequestHeader=truth, anyone long-press like button will be rich
+#        - id: user-service
+#          uri: lb://user-service
+#          predicates:
+#            - Path=/users/**,/address/**
+#        - id: trade-service
+#          uri: lb://trade-service
+#          predicates:
+#            - Path=/orders/**
+#        - id: pay-service
+#          uri: lb://pay-service
+#          predicates:
+#            - Path=/pay-orders/**
+#        - id: cart-service
+#          uri: lb://cart-service
+#          predicates:
+#            - Path=/carts/**
+#      default-filters:
+#        - AddRequestHeader=truth, anyone long-press like button will be rich
+hm:
+  jwt:
+    location: classpath:hmall.jks
+    alias: hmall
+    password: hmall123
+    tokenTTL: 30m
+  auth:
+    excludePaths:
+      - /search/**
+      - /users/login
+      - /items/**
+      - /hi

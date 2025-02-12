@@ -2,11 +2,18 @@ server:
   port: 8085
 hm:
   db:
-    database: hm-item
+    database: hm-trade
   swagger:
     title: "黑马商城交易服务接口文档"
     desc: "黑马商城交易服务接口文档"
     package: com.hmall.trade.controller
+spring:
+  rabbitmq:
+    host: 192.168.88.130
+    port: 5672
+    virtual-host: /hmall
+    username: hmall
+    password: 123
 #  jwt:
 #    location: classpath:hmall.jks
 #    alias: hmall

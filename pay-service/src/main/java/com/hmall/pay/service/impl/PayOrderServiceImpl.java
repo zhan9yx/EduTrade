@@ -15,6 +15,8 @@ import com.hmall.pay.enums.PayStatus;
 import com.hmall.pay.mapper.PayOrderMapper;
 import com.hmall.pay.service.IPayOrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +32,15 @@ import java.time.LocalDateTime;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> implements IPayOrderService {
 
     // private final IUserService userService;
     // private final IOrderService orderService;
 
-    private final TradeClient tradeClient;
+    // private final TradeClient tradeClient;
     private final UserClient userClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public String applyPayOrder(PayApplyDTO applyDTO) {
@@ -69,7 +73,15 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
 //        order.setStatus(2);
 //        order.setPayTime(LocalDateTime.now());
 //        tradeClient.updateById(order);
-        tradeClient.markOrderPaySuccess(po.getBizOrderNo());
+        // 修改订单状态 -- 基于openFeign远程调用
+        // tradeClient.markOrderPaySuccess(po.getBizOrderNo());
+        // TODO 基于mq的消息队列实现
+        try {
+            rabbitTemplate.convertAndSend("trade.pay.success.queue", po.getBizOrderNo());
+        } catch (Exception e) {
+            log.error("发送支付状态通知失败:{}", po.getPayOrderNo(), e);
+        }
+
     }
 
     public boolean markPayOrderSuccess(Long id, LocalDateTime successTime) {
